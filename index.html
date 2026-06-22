@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Krones Fest</title>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f7f7f7;
+    text-align: center;
+    margin-top: 100px;
+    overflow: hidden;
+  }
+
+  button {
+    font-size: 20px;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    margin: 8px;
+  }
+
+  #btnYes { background: #2e7d32; color: white; }
+  #btnNo { background: #c62828; color: white; }
+
+  #phase2_yes,
+  #phase2_no {
+    display: none;
+    margin-top: 40px;
+  }
+
+  .choiceBtn {
+    background: #1565c0;
+    color: white;
+  }
+
+  #runawayBtn {
+    position: absolute;
+    background: #c62828;
+    color: white;
+    display: none;
+  }
+
+  #sadHamster {
+    display: none;
+    width: 240px;
+    margin: 20px auto;
+    border-radius: 12px;
+  }
+
+  @keyframes shake {
+    0% { transform: translate(0, 0) rotate(0deg); }
+    25% { transform: translate(2px, -2px) rotate(-1deg); }
+    50% { transform: translate(-2px, 2px) rotate(1deg); }
+    75% { transform: translate(2px, 2px) rotate(0deg); }
+    100% { transform: translate(0, 0) rotate(0deg); }
+  }
+
+  .shake {
+    animation: shake 0.12s infinite;
+  }
+</style>
+</head>
+
+<body>
+
+<h1>Hey Karo, möchtest du mit mir aufs Krones Fest gehen? 🎡</h1>
+
+<button id="btnYes" onclick="yesClick()">Ja</button>
+<button id="btnNo" onclick="noClick()">Nein</button>
+
+<!-- PHASE 2 JA -->
+<div id="phase2_yes">
+  <h2>Wie wollen wir es machen? 🙂</h2>
+
+  <button class="choiceBtn" onclick="pickup()">Ich hole dich ab 🚗</button>
+  <button class="choiceBtn" onclick="meet()">Wir treffen uns dort 🎡</button>
+</div>
+
+<!-- PHASE 2 NEIN -->
+<div id="phase2_no">
+  <h2>Bist du dir sicher? 🤔</h2>
+
+  <img
+    id="sadHamster"
+    src="https://media.giphy.com/media/98MaHVwJOmWMz4cz1K/giphy.gif"
+    alt="Sad Hamster">
+
+  <br>
+
+  <button onclick="goBack()">Nein</button>
+  <button id="runawayBtn">Ja</button>
+</div>
+
+<script>
+
+let runawayBtn;
+let runawayMode = false;
+let escapeCount = 0;
+let lastEscape = 0;
+
+// ================= PHASE 1 =================
+
+function yesClick() {
+  document.getElementById("btnYes").style.display = "none";
+  document.getElementById("btnNo").style.display = "none";
+
+  launchConfetti();
+
+  document.getElementById("phase2_yes").style.display = "block";
+}
+
+function noClick() {
+  document.getElementById("btnYes").style.display = "none";
+  document.getElementById("btnNo").style.display = "none";
+
+  document.getElementById("phase2_no").style.display = "block";
+  document.getElementById("sadHamster").style.display = "block";
+
+  activateRunawayImmediately();
+}
+
+// ================= PHASE 2 NO =================
+
+function goBack() {
+  document.getElementById("phase2_no").style.display = "none";
+
+  document.getElementById("btnYes").style.display = "inline-block";
+  document.getElementById("btnNo").style.display = "inline-block";
+
+  document.getElementById("sadHamster").style.display = "none";
+
+  runawayMode = false;
+  escapeCount = 0;
+
+  if (runawayBtn) {
+    runawayBtn.classList.remove("shake");
+    runawayBtn.style.display = "none";
+  }
+}
+
+// ================= RUNAWAY =================
+
+function activateRunawayImmediately() {
+
+  runawayBtn = document.getElementById("runawayBtn");
+
+  runawayBtn.style.display = "inline-block";
+
+  runawayBtn.style.left = "50%";
+  runawayBtn.style.top = "60%";
+  runawayBtn.style.transform = "translate(-50%, -50%)";
+
+  runawayBtn.innerText = "Ja";
+
+  runawayMode = true;
+  escapeCount = 0;
+
+  runawayBtn.onmouseenter = escape;
+
+  runawayBtn.ontouchstart = function(e) {
+    if (!runawayMode) return;
+
+    e.preventDefault();
+    escape();
+  };
+}
+
+function escape() {
+
+  const now = Date.now();
+
+  if (now - lastEscape < 200) return;
+
+  lastEscape = now;
+
+  if (!runawayMode) return;
+
+  escapeCount++;
+
+  updateEmotion();
+
+  const padding = 120;
+
+  runawayBtn.style.left =
+    Math.random() * (window.innerWidth - padding) + "px";
+
+  runawayBtn.style.top =
+    Math.random() * (window.innerHeight - padding) + "px";
+
+  runawayBtn.style.transform = "none";
+}
+
+// ================= EMOTION =================
+
+function updateEmotion() {
+
+  if (escapeCount === 1) {
+    runawayBtn.innerText = "Stop! 🛑";
+  }
+
+  else if (escapeCount === 2) {
+    runawayBtn.innerText = "Warte kurz";
+  }
+
+  else if (escapeCount === 3) {
+    runawayBtn.innerText = "Wirklich?";
+  }
+
+  else {
+    runawayBtn.innerText = "Überlegs dir, bitte";
+  }
+
+  if (escapeCount >= 3) {
+    runawayBtn.classList.add("shake");
+  }
+}
+
+// ================= JA FLOW =================
+
+function pickup() {
+  finish("pickup");
+}
+
+function meet() {
+  finish("meet");
+}
+
+function finish(type) {
+
+  document.body.innerHTML = `
+    <div style="font-family:Arial; text-align:center; margin-top:100px;">
+      <h1>Perfekt 🙂</h1>
+
+      <p>Karo, wie wollen wir schreiben?</p>
+
+      <button onclick="openWhatsApp('${type}')"
+        style="
+          font-size:20px;
+          padding:12px 20px;
+          background:#25D366;
+          color:white;
+          border:none;
+          border-radius:10px;">
+        WhatsApp öffnen 💬
+      </button>
+    </div>
+  `;
+
+  launchConfetti();
+}
+
+// ================= WHATSAPP =================
+
+function openWhatsApp(type) {
+
+  const number = "4915142327096";
+
+  const text =
+    type === "pickup"
+      ? "Hey Karo 🙂 ich hole dich fürs Krones Fest ab 🚗"
+      : "Hey Karo 🙂 wir treffen uns direkt beim Krones Fest 🎡";
+
+  window.location.href =
+    `https://wa.me/${number}?text=${encodeURIComponent(text)}`;
+}
+
+// ================= CONFETTI =================
+
+function launchConfetti() {
+
+  const canvas = document.createElement("canvas");
+  document.body.appendChild(canvas);
+
+  canvas.style.position = "fixed";
+  canvas.style.top = "0";
+  canvas.style.left = "0";
+  canvas.style.width = "100vw";
+  canvas.style.height = "100vh";
+  canvas.style.pointerEvents = "none";
+  canvas.style.zIndex = "9999";
+
+  const ctx = canvas.getContext("2d");
+
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const colors = ["#2e7d32", "#1565c0", "#c62828", "#f9a825"];
+  const particles = [];
+
+  const cx = canvas.width / 2;
+  const cy = canvas.height / 2;
+
+  for (let i = 0; i < 160; i++) {
+
+    const angle = Math.random() * Math.PI * 2;
+    const speed = Math.random() * 8 + 3;
+
+    particles.push({
+      x: cx,
+      y: cy,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed,
+      size: Math.random() * 5 + 2,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      gravity: 0.12,
+      alpha: 1
+    });
+  }
+
+  function animate() {
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    let alive = false;
+
+    for (let p of particles) {
+
+      p.vy += p.gravity;
+      p.x += p.vx;
+      p.y += p.vy;
+      p.alpha -= 0.01;
+
+      if (p.alpha > 0) alive = true;
+
+      ctx.globalAlpha = Math.max(p.alpha, 0);
+      ctx.fillStyle = p.color;
+
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    ctx.globalAlpha = 1;
+
+    if (alive) {
+      requestAnimationFrame(animate);
+    } else {
+      canvas.remove();
+    }
+  }
+
+  animate();
+}
+
+</script>
+
+</body>
+</html>
