@@ -198,19 +198,19 @@ function escape() {
 function updateEmotion() {
 
   if (escapeCount === 1) {
-    runawayBtn.innerText = "Stop! 🛑";
+    runawayBtn.innerText = "Stop!";
   }
 
   else if (escapeCount === 2) {
-    runawayBtn.innerText = "Warte kurz";
+    runawayBtn.innerText = "Warte kurz!";
   }
 
   else if (escapeCount === 3) {
-    runawayBtn.innerText = "Wirklich?";
+    runawayBtn.innerText = "Wirklich?!";
   }
 
   else {
-    runawayBtn.innerText = "Überlegs dir, bitte";
+    runawayBtn.innerText = "Bist du dir ganz sicher?";
   }
 
   if (escapeCount >= 3) {
@@ -232,9 +232,9 @@ function finish(type) {
 
   document.body.innerHTML = `
     <div style="font-family:Arial; text-align:center; margin-top:100px;">
-      <h1>Perfekt 🙂</h1>
+      <h1>Super, das freut mich! 🙂</h1>
 
-      <p>Karo, wie wollen wir schreiben?</p>
+      <p> Wollen wir auf WhatsApp weiterschreiben?</p>
 
       <button onclick="openWhatsApp('${type}')"
         style="
